@@ -3,12 +3,10 @@ name: Cross-Platform Release
 on:
   push:
     tags:
-      - 'v*'  # 仅打 tag 时触发
+      - 'v*'  # 只有推送 tag 时触发
 
 jobs:
   build:
-    # runs-on: ubuntu-latest
-
     strategy:
       matrix:
         include:
@@ -36,24 +34,21 @@ jobs:
         with:
           toolchain: stable
           target: ${{ matrix.target }}
-          override: true          # 覆盖默认 Rust 版本
-
-      - name: Install build dependencies (Windows only)
-        if: matrix.os == 'windows-latest'
-        run: |
-          rustup target add ${{ matrix.target }}
+          override: true
 
       - name: Build binary
         run: cargo build --release --target ${{ matrix.target }}
 
+      - name: List built files
+        run: ls -lh target/${{ matrix.target }}/release
+
       - name: Package binary
         run: |
           cd target/${{ matrix.target }}/release
+          ARCHIVE_NAME=get-request-info-rs-${{ matrix.target }}.${{ matrix.archive }}
           BINARY_NAME=get-request-info-rs${{ matrix.ext }}
-          ARCHIVE_NAME=${{ matrix.target }}.${{ matrix.archive }}
-          mv get-request-info-rs${{ matrix.ext }} $BINARY_NAME
 
-          if [ "${{ matrix.archive }}" == "zip" ]; then
+          if [ "${{ matrix.archive }}" = "zip" ]; then
             zip $ARCHIVE_NAME $BINARY_NAME
           else
             tar czf $ARCHIVE_NAME $BINARY_NAME
@@ -66,7 +61,8 @@ jobs:
         uses: softprops/action-gh-release@v2
         with:
           files: |
-            target/${{ matrix.target }}.tar.gz
-            target/${{ matrix.target }}.zip
+            target/get-request-info-rs-x86_64-unknown-linux-gnu.tar.gz
+            target/get-request-info-rs-x86_64-apple-darwin.tar.gz
+            target/get-request-info-rs-x86_64-pc-windows-gnu.zip
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
