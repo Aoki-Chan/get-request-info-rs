@@ -48,20 +48,27 @@ jobs:
         if: matrix.os == 'windows-latest'
         run: Get-ChildItem target\x86_64-pc-windows-gnu\release
 
-      - name: Package binary
+      - name: Package binary (Unix)
+        if: matrix.os != 'windows-latest'
+        shell: bash
         run: |
           cd target/${{ matrix.target }}/release
-          ARCHIVE_NAME=get-request-info-rs-${{ matrix.target }}.${{ matrix.archive }}
-          BINARY_NAME=get-request-info-rs${{ matrix.ext }}
+          ARCHIVE_NAME=get-request-info-rs-${{ matrix.target }}.tar.gz
+          BINARY_NAME=get-request-info-rs
 
-          if [ "${{ matrix.archive }}" = "zip" ]; then
-            zip $ARCHIVE_NAME $BINARY_NAME
-          else
-            tar czf $ARCHIVE_NAME $BINARY_NAME
-          fi
-
+          tar czf $ARCHIVE_NAME $BINARY_NAME
           mv $ARCHIVE_NAME ../../../
-        shell: bash
+
+      - name: Package binary (Windows)
+        if: matrix.os == 'windows-latest'
+        shell: pwsh
+        run: |
+          $binaryName = "get-request-info-rs.exe"
+          $archiveName = "get-request-info-rs-${{ matrix.target }}.zip"
+          $binaryPath = "target\\${{ matrix.target }}\\release\\$binaryName"
+          $outputPath = "target\\$archiveName"
+          Compress-Archive -Path $binaryPath -DestinationPath $outputPath
+
 
       - name: Upload to GitHub Release
         uses: softprops/action-gh-release@v2
