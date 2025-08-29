@@ -49,9 +49,9 @@ jobs:
       - name: Package binary
         run: |
           cd target/${{ matrix.target }}/release
-          BINARY_NAME=your_binary_name${{ matrix.ext }}
+          BINARY_NAME=get-request-info-rs${{ matrix.ext }}
           ARCHIVE_NAME=${{ matrix.target }}.${{ matrix.archive }}
-          mv your_binary_name${{ matrix.ext }} $BINARY_NAME
+          mv get-request-info-rs${{ matrix.ext }} $BINARY_NAME
 
           if [ "${{ matrix.archive }}" == "zip" ]; then
             zip $ARCHIVE_NAME $BINARY_NAME
