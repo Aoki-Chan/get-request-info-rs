@@ -34,8 +34,9 @@ jobs:
       - name: Set up Rust
         uses: actions-rs/toolchain@v1
         with:
-          rust-version: stable
+          toolchain: stable
           target: ${{ matrix.target }}
+          override: true          # 覆盖默认 Rust 版本
 
       - name: Install build dependencies (Windows only)
         if: matrix.os == 'windows-latest'
