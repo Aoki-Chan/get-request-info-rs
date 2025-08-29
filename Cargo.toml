@@ -1,7 +1,9 @@
 [package]
 name = "get-request-info-rs"
 version = "0.1.0"
+authors = ["Aoki-Chan <aoki-chan@autistici.org>"]
 edition = "2024"
+license = "MIT"
 
 [dependencies]
 axum = "0.7"
